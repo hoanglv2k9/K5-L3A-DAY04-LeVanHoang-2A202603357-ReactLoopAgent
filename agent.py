@@ -29,7 +29,14 @@ ENABLE_SOURCE_VALIDATION = True
 
 def run_agent(question, provider, tools, max_steps=6):
     """Trả dict: status, answer, trace, usage. Contract chi tiết trong GUIDE.md."""
-    system_prompt = getattr(tools, 'system_prompt', SYSTEM_PROMPT)
+    base_prompt = getattr(tools, 'system_prompt', SYSTEM_PROMPT)
+    extra_rules = '''
+Quy tắc điều tra nâng cao:
+- Khi gặp lỗi RATE_LIMITED (429) hoặc INVALID_ARGUMENTS từ tool, đọc thông báo lỗi và thử gọi lại (retry) với tham số hợp lệ trong giới hạn ngân sách bước.
+- Khi câu hỏi yêu cầu đối chiếu incident mới nhất của các dịch vụ (ví dụ Vercel, npm), sau khi gọi status tool BẮT BUỘC phải gọi tiếp get_incident_details cho từng incident ID tìm được để lấy chi tiết ID, thời gian, trạng thái, nguyên nhân.
+- Khi người dùng hỏi về nhà cung cấp không có trong hệ thống (ví dụ Linear, Slack), phải nói rõ hệ thống không hỗ trợ/không có công cụ cho nhà cung cấp này, tuyệt đối không bịa đặt trạng thái hoặc tạo link incident giả lập.
+- Nêu rõ chỉ báo indicator (none, minor, major) cho từng nhà cung cấp được hỏi.'''
+    system_prompt = base_prompt + "\n" + extra_rules
     schemas = getattr(tools, 'schemas', SCHEMAS)
 
     messages = [
