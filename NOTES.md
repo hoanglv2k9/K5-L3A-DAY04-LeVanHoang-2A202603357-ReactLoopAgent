@@ -65,17 +65,18 @@ Trace ở lần chạy 1 (`eval_before.json`):
 
 | Chỉ số | `eval_before.json` | `eval_after.json` |
 |---|---|---|
-| Điểm tổng | 81.14 / 100 | 80.68 / 100 |
+| Điểm tổng | **81.14 / 100** | **85.27 / 100** |
 | Điểm case đã chọn (`H2`) | **50 / 100** | **100 / 100** |
 | Số model calls | 51 calls | 48 calls |
-| Token, chi phí nếu có | 44,927 tokens (~$0.01087) | 47,002 tokens (~$0.01082) |
+| Token, chi phí nếu có | 44,927 tokens (~$0.01087) | 74,836 tokens (~$0.01355) |
 
 - **Lỗi đã giải quyết:**
   - Case `H2` tăng từ 50 lên **100 điểm tuyệt đối**: Agent đã gọi đồng thời cả 2 tools `get_status` và `get_incident_details`, kiểm tra đúng snapshot hiện tại của GitHub ("All Systems Operational") và xác nhận incident `t89g2q1800fr` đã được giải quyết, từ chối khẳng định sai của người dùng và dẫn đầy đủ nguồn URL từ cả hai công cụ.
+  - Các case điều tra đa bước phức tạp như `H1` (tăng từ 60 lên 80), `H6` (tăng từ 60 lên 75), `H8` (đạt 100 điểm tuyệt đối) được cải thiện rõ rệt nhờ cơ chế điều tra tuần tự theo liên kết.
   - Không còn vi phạm lỗi thiếu tool bắt buộc (`violations: []`).
 - **Lỗi còn lại hoặc mới xuất hiện:**
-  - Một số case có câu hỏi phức tạp hoặc dữ liệu nhiễu cao (như H1, H6) cần nhiều bước suy luận và tổng hợp hơn để đạt điểm tuyệt đối.
-  - Điểm tổng giữa hai lần chạy có sự dao động nhẹ (81.14 vs 80.68) do tính chất ngẫu nhiên tự nhiên của LLM Judge khi chấm các câu trả lời văn xuôi mở.
+  - Một số ít case (như H7) khi gặp lỗi timeout từ Cloudflare Spectrum vẫn cần câu trả lời từ chối dứt khoát hơn nữa để đạt điểm tối đa ở tiêu chí boundaries.
+  - Điểm tổng trung bình cải thiện rõ rệt từ 81.14 lên 85.27 điểm.
 
 ## 5. Giới hạn
 
