@@ -57,9 +57,29 @@ def main():
     if not selected:
         parser.error('Không tìm thấy case')
     def run_and_print(case):
-        print(f"Đang chạy {case['id']}", flush=True)
+        cid = case['id']
+        print(f"\n{'='*50}\n[BẮT ĐẦU] Case {cid}: {case['question'][:70]}...", flush=True)
         item = run_case(case, args)
-        print(f"{case['id']}: {item['grade'].get('score')} ({item['grade']['status']})", flush=True)
+        res = item.get('result', {})
+        grd = item.get('grade', {})
+        score = grd.get('score')
+        status = grd.get('status')
+        print(f"[KẾT QUẢ {cid}] Điểm: {score}/100 | Trạng thái: {status}", flush=True)
+        dims = grd.get('dimensions')
+        if dims:
+            print(f"  -> Chi tiết điểm: Factuality={dims.get('factuality')}/40, Completeness={dims.get('completeness')}/25, Evidence={dims.get('evidence')}/20, Boundaries={dims.get('boundaries')}/15", flush=True)
+        mech = grd.get('mechanical', {})
+        if mech and mech.get('violations'):
+            print(f"  -> Vi phạm cơ học (Bị áp trần {mech.get('score_cap')}đ): {', '.join(mech.get('violations'))}", flush=True)
+        reason = grd.get('reason')
+        if reason:
+            print(f"  -> Nhận xét Judge: {reason}", flush=True)
+        if status != 'scored' or res.get('status') == 'error':
+            err = res.get('error') or grd.get('reason')
+            print(f"  -> [CẢNH BÁO LỖI {cid}]: {err}", flush=True)
+            if res.get('trace'):
+                print(f"  -> Trace cuối: {res['trace'][-1]}", flush=True)
+        print(f"{'='*50}\n", flush=True)
         return item
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         results = list(pool.map(run_and_print, selected))

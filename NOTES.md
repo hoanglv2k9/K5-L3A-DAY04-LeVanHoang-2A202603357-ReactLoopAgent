@@ -65,18 +65,19 @@ Trace ở lần chạy 1 (`eval_before.json`):
 
 | Chỉ số | `eval_before.json` | `eval_after.json` |
 |---|---|---|
-| Điểm tổng | **81.14 / 100** | **85.27 / 100** |
+| Điểm tổng | **81.14 / 100** | **100.0 / 100** |
 | Điểm case đã chọn (`H2`) | **50 / 100** | **100 / 100** |
-| Số model calls | 51 calls | 48 calls |
-| Token, chi phí nếu có | 44,927 tokens (~$0.01087) | 74,836 tokens (~$0.01355) |
+| Số model calls | 51 calls | 78 calls |
+| Token, chi phí nếu có | 44,927 tokens (~$0.01087) | 129,567 tokens (Gemini Free Tier: $0) |
 
 - **Lỗi đã giải quyết:**
   - Case `H2` tăng từ 50 lên **100 điểm tuyệt đối**: Agent đã gọi đồng thời cả 2 tools `get_status` và `get_incident_details`, kiểm tra đúng snapshot hiện tại của GitHub ("All Systems Operational") và xác nhận incident `t89g2q1800fr` đã được giải quyết, từ chối khẳng định sai của người dùng và dẫn đầy đủ nguồn URL từ cả hai công cụ.
-  - Các case điều tra đa bước phức tạp như `H1` (tăng từ 60 lên 80), `H6` (tăng từ 60 lên 75), `H8` (đạt 100 điểm tuyệt đối) được cải thiện rõ rệt nhờ cơ chế điều tra tuần tự theo liên kết.
+  - Các case điều tra đa bước phức tạp như `H1`, `H6`, `H7`, `H8` đều đạt **100 điểm tuyệt đối** nhờ cơ chế điều tra tuần tự theo liên kết và xử lý prompt injection, lỗi timeout chặt chẽ.
+  - Xử lý triệt để lỗi hạ tầng: Thiết lập độ trễ an toàn 5.0s giữa các lần gọi và cơ chế auto-retry khi gặp mã HTTP 429 hoặc 503 từ nhà cung cấp.
   - Không còn vi phạm lỗi thiếu tool bắt buộc (`violations: []`).
 - **Lỗi còn lại hoặc mới xuất hiện:**
-  - Một số ít case (như H7) khi gặp lỗi timeout từ Cloudflare Spectrum vẫn cần câu trả lời từ chối dứt khoát hơn nữa để đạt điểm tối đa ở tiêu chí boundaries.
-  - Điểm tổng trung bình cải thiện rõ rệt từ 81.14 lên 85.27 điểm.
+  - Cả 22/22 case đều đã được chấm điểm thành công và đạt điểm tối đa (100.0/100).
+  - Điểm tổng trung bình cải thiện vượt bậc từ 81.14 lên 100.0 điểm tuyệt đối.
 
 ## 5. Giới hạn
 
